@@ -1,9 +1,15 @@
 import express from "express";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import FileUpload from "express-fileupload";
+import db from "./config/Database.js";
+import router from "./routes/index.js";
+dotenv.config();
 const app = express();
 import { createServer } from "http";
 import cors from "cors";
 import { Server } from "socket.io";
-app.use(cors());
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
 const server = createServer(app);
 
@@ -13,6 +19,18 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+
+try {
+  await db.authenticate();
+  console.log("Database Connected...");
+} catch (error) {
+  console.error(error);
+}
+app.use(express.static("public"));
+app.use(express.json());
+app.use(cookieParser());
+app.use(FileUpload());
+app.use(router);
 
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
