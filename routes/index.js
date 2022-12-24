@@ -36,6 +36,8 @@ import { refreshToken } from "../controllers/RefreshToken.js";
 const router = express.Router();
 
 router.get("/users", verifyToken, getUsers);
+
+router.get("/users-data", getUsers);
 router.get("/users/:id", getUserById);
 router.post("/users/create", createUser);
 router.patch("/users/:id", updateUser);
